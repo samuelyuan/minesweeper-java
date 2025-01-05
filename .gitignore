@@ -1,0 +1,7 @@
+.gradle/
+/bin/
+/build/
+!src/**/build/
+gradle-app.setting
+.gradletasknamecache
+*.iml

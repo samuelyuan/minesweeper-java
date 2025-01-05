@@ -51,12 +51,6 @@ public class Board
 	{
 		Board board = new Board(9, 9);
 		System.out.println(board);
-//		
-//		board.generateMines(10);
-//		System.out.println(board);
-//		
-//		board.generateNumMinesAdjacent();
-//		System.out.println(board);
 	}
 
 }
