@@ -1,3 +1,5 @@
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -8,13 +10,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Draw extends Application {
     private int screenWidth;
     private int screenHeight;
     private Canvas canvas;
     private GraphicsContext gc;
-    private int width, height;
+    private Timeline timeline;
 
     // runtime settings
     private Thread thread;
@@ -62,20 +65,16 @@ public class Draw extends Application {
         primaryStage.setTitle("Minesweeper");
         primaryStage.show();
 
-        thread = new Thread(() -> {
-            while (true) {
-                draw(gc);
-                try {
-                    Thread.sleep(delayTime);
-                    if (!board.isLose() && !board.isWin()) {
-                        numMilliseconds += delayTime;
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        timeline = new Timeline(new KeyFrame(Duration.millis(delayTime), event -> {
+            draw(gc);
+            if (!board.isLose() && !board.isWin()) {
+                numMilliseconds += delayTime;
             }
-        });
-        thread.start();
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+
+        primaryStage.setOnCloseRequest(event -> timeline.stop());
     }
 
     private void loadImages() {
@@ -227,7 +226,7 @@ public class Draw extends Application {
         }
 
         if (e.getButton() == MouseButton.PRIMARY) {
-            if (board.getIsFlagged(r, c) == false) {
+            if (!board.getIsFlagged(r, c)) {
                 if (board.getTile(r, c) == MinesweeperBoard.ID_MINE) {
                     revealAllMines(board);
                 } else {
